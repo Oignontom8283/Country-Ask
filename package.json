@@ -1,0 +1,38 @@
+{
+  "name": "country-ask",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build:js": "tsc",
+    "build:bin": "pkg . --targets node18-win,node18-linux,node18-macos --output './bin/Country ask'",
+    "compile": "npm run build:js && npm run build:bin",
+    "transpile": "npm run build:js",
+    "build": "npm run build:js",
+    "start": "node .",
+    "dev": "npm run build:js && npm run start"
+  },
+  "bin": {
+    "app": "dist/index.js",
+    "output": "./bin"
+  },
+  "keywords": [],
+  "author": "Oignontom8283",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^22.13.9",
+    "i": "^0.3.7",
+    "npm": "^11.2.0",
+    "pkg": "^5.8.1",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "axios": "^1.8.2",
+    "chalk": "^5.4.1",
+    "inquirer": "^12.4.2",
+    "log-update": "^6.1.0",
+    "zod": "^3.24.2"
+  }
+}
