@@ -1,9 +1,12 @@
-import { AnswersMapper, AnswerType, InputType } from "./utils";
+import inquirer from "inquirer";
+import { AnswersMapper, AnswerType, InputType, randomSelect } from "./utils";
 
 const answers:AnswersMapper[] = [
     {
         type: AnswerType.CountryCapital,
-        execute: (({continent, inputType}) => {
+        execute: (({continent, inputType, countrys}) => {
+
+            
 
             return {
                 successful: false,

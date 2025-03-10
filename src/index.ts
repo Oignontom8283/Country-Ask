@@ -130,14 +130,14 @@ import answers from "./answers";
 
         if (result.successful) {
             console.log(
-                `Question n°${i} réussie !`.green, `    ${displayStade(i, numberOfQuestions)}`,
+                `Question n°${i} réussie !`.colorRGB([0, 0, 255]).bld, `    ${displayStade(i, numberOfQuestions)}`,
                 "\n",
                 "Points gagnés :".white, result.score.toString().blue.bld,
                 "\n",
             )
         } else {
             console.log(
-                `Question n°${i} échouée !`.red, `        ${displayStade(i, numberOfQuestions)}`,
+                `Question n°${i} échouée !`.colorRGB([255, 0, 0]).bld, `        ${displayStade(i, numberOfQuestions)}`,
                 "\n",
                 "Bonne réponse :".white, result.good_answer.blue.bld,
                 "\n",

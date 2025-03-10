@@ -227,3 +227,13 @@ export const CountryDataSchema = z.object({
 })
 
 export const CountrysDataSchema = z.array(CountryDataSchema);
+
+
+/**
+ * Selects a random element from an array.
+ *
+ * @template T - The type of elements in the array.
+ * @param {T[]} array - The array from which to select a random element.
+ * @returns {T} - A randomly selected element from the array.
+ */
+export const randomSelect = <T>(array:T[]):T => array[Math.floor(Math.random() * array.length)];
