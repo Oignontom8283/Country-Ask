@@ -54,12 +54,19 @@ export enum InputType {
     Helper = "helper",
 }
 
-export type ExecuteReturn = {
-    successful: boolean;
-    good_answer: string;
-    score: number;
-    message?: string;
-}
+export type ExecuteReturn =
+    | {
+        successful: true;
+        good_answer?: string;
+        score: number;
+        message?: string;
+    }
+    | {
+        successful: false;
+        good_answer: string; // Obligatoire si successful est false
+        score: number;
+        message?: string;
+    };
 
 export interface AnswersMapper {
     type: AnswerType;
@@ -229,11 +236,60 @@ export const CountryDataSchema = z.object({
 export const CountrysDataSchema = z.array(CountryDataSchema);
 
 
-/**
- * Selects a random element from an array.
- *
- * @template T - The type of elements in the array.
- * @param {T[]} array - The array from which to select a random element.
- * @returns {T} - A randomly selected element from the array.
- */
-export const randomSelect = <T>(array:T[]):T => array[Math.floor(Math.random() * array.length)];
+
+
+export const randomSelect = <T, N extends number>(
+    array: T[],
+    count: N,
+    filterFn?: (item: T) => boolean
+): N extends 1 ? T : T[] | undefined => {
+    const filteredArray = filterFn ? array.filter(filterFn) : array;
+    
+    if (filteredArray.length === 0) return undefined as any;
+
+    if (count >= filteredArray.length) 
+        return (count === 1 ? filteredArray[0] : [...filteredArray]) as any;
+
+    const shuffled = filteredArray.sort(() => Math.random() - 0.5).slice(0, count);
+    
+    return (count === 1 ? shuffled[0] : shuffled) as any;
+};
+
+
+export function shuffleArray<T>(array: T[]): T[] {
+    // Créer une copie de l'array d'origine pour éviter de modifier l'entrée
+    const shuffledArray = [...array];
+
+    for (let i = shuffledArray.length - 1; i > 0; i--) {
+        // Générer un index aléatoire
+        const randomIndex = Math.floor(Math.random() * (i + 1));
+
+        // Échanger les éléments
+        [shuffledArray[i], shuffledArray[randomIndex]] = [shuffledArray[randomIndex], shuffledArray[i]];
+    }
+
+    return shuffledArray;
+}
+
+function cleanTextForPrint(text: string): string {
+    // Expression régulière pour capturer les codes de couleurs ANSI
+    const ansiRegex = /\x1b\[[0-9;]*m/g;
+    // Supprimer les codes de couleurs ANSI
+    return text.replace(ansiRegex, '');
+}
+
+export function alignText(left: string, right: string): string {
+    // Nettoyer les textes pour retirer les caractères de couleur
+    const cleanedLeft = cleanTextForPrint(left);
+    const cleanedRight = cleanTextForPrint(right);
+
+    // Calculer la largeur des deux textes
+    const leftLength = cleanedLeft.length;
+    const rightLength = cleanedRight.length;
+
+    // Espaces à ajouter entre les deux textes pour les aligner
+    const spacesToAdd = Math.max(0, (process.stdout.columns || 80) - (leftLength + rightLength));
+
+    // Créer la ligne finale
+    return `${left}${' '.repeat(spacesToAdd)}${right}`;
+}
