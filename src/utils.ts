@@ -14,13 +14,13 @@ export const allDifficulty = Object.values(DifficultyLevel);
 
 
 
-export enum AnswerType {
+export enum QuestionType {
     CountryContinent = "CountryContinent",
     CountryPeople = "CountryPeople",
     CountryCapital = "CountryCapital",
 }
 
-export const allQuestionType = Object.values(AnswerType);
+export const allQuestionType = Object.values(QuestionType);
 
 
 
@@ -54,7 +54,7 @@ export enum InputType {
     Helper = "helper",
 }
 
-export type ExecuteReturn =
+export type Answer =
     | {
         successful: true;
         good_answer?: string;
@@ -68,9 +68,9 @@ export type ExecuteReturn =
         message?: string;
     };
 
-export interface AnswersMapper {
-    type: AnswerType;
-    execute: (context:{continent:Continent[], inputType:InputType[], countrys:z.infer<typeof CountrysDataSchema>}) => Promise<ExecuteReturn> | ExecuteReturn;
+export interface QuestionMapper {
+    type: QuestionType;
+    execute: (context:{continent:Continent[], inputType:InputType[], countrys:z.infer<typeof CountrysDataSchema>, rawCountry:z.infer<typeof CountrysDataSchema>}) => Promise<Answer> | Answer;
 }
 
 export function sleep(ms: number): Promise<void> {

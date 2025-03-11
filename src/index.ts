@@ -1,7 +1,7 @@
 import inquirer from "inquirer";
-import { allQuestionType, Continent, AnswerType, sleep, cursor, CountryDataSchema, CountrysDataSchema, InputType, AnswersMapper, alignText } from "./utils";
+import { allQuestionType, Continent, QuestionType, sleep, cursor, CountryDataSchema, CountrysDataSchema, InputType, QuestionMapper, alignText, shuffleArray, randomSelect } from "./utils";
 import axios from "axios";
-import answers from "./answers";
+import questionsMapper from "./questions";
 
 
 (async () => {
@@ -11,9 +11,9 @@ import answers from "./answers";
             name: "typeSelected",
             message: "Type de question?",
             choices: [
-                {name: "Nombre d'habitants", value: AnswerType.CountryPeople},
-                {name: "Capitale",           value: AnswerType.CountryCapital},
-                {name: "Continent",          value: AnswerType.CountryContinent},
+                {name: "Nombre d'habitants", value: QuestionType.CountryPeople},
+                {name: "Capitale",           value: QuestionType.CountryCapital},
+                {name: "Continent",          value: QuestionType.CountryContinent},
             ],
             default: allQuestionType,
             validate: (input) => input.length > 0 ? true : "Vous devez choisir au moins un type de question."
@@ -92,8 +92,17 @@ import answers from "./answers";
         cursor.on()
     }
 
+    /**
+     * Function to display the error message
+     */
     const loadErrorMessage = (error:any) => `Une erreur l'ors du chargement des données est survenue.`.red + `\n ${error}`.gray
 
+    /**
+     * Function to display the stade of the loading
+     */
+    const displayStade = (stade:string | number, total:string | number) => `${'['.white.bld}${stade.toString().yellow}${'/'.gray}${total.toString().blue}${']'.white.bld}`
+    
+    
     const data = await axios.get("https://restcountries.com/v3.1/all")
         .then((response) => {
 
@@ -107,7 +116,7 @@ import answers from "./answers";
 
             stopLoading("success")
 
-            return response.data
+            return parse.data
         }).catch((error) => {
             stopLoading("error")
 
@@ -115,26 +124,28 @@ import answers from "./answers";
             process.exit(1)
         });
 
+    const rawCountry = data
+    const country = data.filter(item => continentSelected.includes(item.region))
 
-    const displayStade = (stade:string | number, total:string | number) => `${'['.white.bld}${stade.toString().yellow}${'/'.gray}${total.toString().blue}${']'.white.bld}`
     
-    let questions:AnswersMapper[] = []
+    const questionsHandlers = questionsMapper.filter(question => typeSelected.includes(question.type))
+
+    let questions:QuestionMapper[] = []
     for (let i = 1; i <= numberOfQuestions; i++) {
-        const offElements = answers.filter(answers => typeSelected.includes(answers.type))
 
-        const question = offElements[Math.floor(Math.random() * offElements.length)]
+        const question = randomSelect(questionsHandlers, 1)!;
 
-        const result = await question.execute({continent: continentSelected, inputType: Object.values(InputType), countrys: data})
+        const answer = await question.execute({continent: continentSelected, inputType: Object.values(InputType), countrys: data, rawCountry:data})
 
         console.log("");
         questions.push(question)
 
-        if (result.successful) {
+        if (answer.successful) {
             console.log(
                 alignText(`Question n°${i} réussie !`.colorRGB([0, 255, 0]).bld, displayStade(i, numberOfQuestions)),
                 // `Question n°${i} réussie !`.colorRGB([0, 255, 0]).bld, `    ${displayStade(i, numberOfQuestions)}`,
                 // "\n",
-                "Points gagnés :".white, result.score.toString().blue.bld,
+                "Points gagnés :".white, answer.score.toString().blue.bld,
                 "\n\n",
             )
         } else {
@@ -142,7 +153,7 @@ import answers from "./answers";
                 alignText(`Question n°${i} échouée !`.colorRGB([255, 0, 0]).bld, displayStade(i, numberOfQuestions)),
                 // `Question n°${i} échouée !`.colorRGB([255, 0, 0]).bld, `        ${displayStade(i, numberOfQuestions)}`,
                 // "\n",
-                "Bonne réponse :".white, result.good_answer.blue.bld,
+                "Bonne réponse :".white, answer.good_answer.blue.bld,
                 "\n\n",
             )
         }

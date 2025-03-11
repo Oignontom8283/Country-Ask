@@ -1,10 +1,10 @@
 import inquirer from "inquirer";
-import { AnswersMapper, AnswerType, InputType, randomSelect, shuffleArray } from "./utils";
+import { QuestionMapper, QuestionType, InputType, randomSelect, shuffleArray } from "./utils";
 
-const answers:AnswersMapper[] = [
+const answers:QuestionMapper[] = [
     {
-        type: AnswerType.CountryCapital,
-        execute: (async ({continent, inputType, countrys}) => {
+        type: QuestionType.CountryCapital,
+        execute: (async ({continent, inputType, countrys, rawCountry}) => {
 
             const good_answer = randomSelect(countrys, 1);
 
