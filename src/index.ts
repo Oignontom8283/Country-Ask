@@ -42,7 +42,21 @@ import questionsMapper from "./questions";
     ])
 
     console.log("");
-    
+
+    const { inputType } = await inquirer.prompt([
+        {
+            type: "list",
+            name: "inputType",
+            message: "Difficulty?",
+            choices: [
+                {name: "Easy (selector)", value: InputType.Select},
+                {name: "Normal (Auto-completion)", value: InputType.Helper},
+                {name: "Hard (aucune aide)", value: InputType.Input}
+            ]
+        }
+    ])
+
+    console.log("");
 
     const { numberOfQuestions } = await inquirer.prompt([
         {
@@ -135,7 +149,7 @@ import questionsMapper from "./questions";
 
         const question = randomSelect(questionsHandlers, 1)!;
 
-        const answer = await question.execute({continent: continentSelected, inputType: Object.values(InputType), countrys: data, rawCountry:data})
+        const answer = await question.execute({continent: continentSelected, inputType: inputType, countrys: data, rawCountry:data})
 
         console.log("");
         questions.push(question)

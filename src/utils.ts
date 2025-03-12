@@ -54,6 +54,8 @@ export enum InputType {
     Helper = "helper",
 }
 
+export type InputTypeType = `${InputType}`;
+
 export type Answer =
     | {
         successful: true;
@@ -70,7 +72,7 @@ export type Answer =
 
 export interface QuestionMapper {
     type: QuestionType;
-    execute: (context:{continent:Continent[], inputType:InputType[], countrys:z.infer<typeof CountrysDataSchema>, rawCountry:z.infer<typeof CountrysDataSchema>}) => Promise<Answer> | Answer;
+    execute: (context:{continent:Continent[], inputType:InputTypeType, countrys:z.infer<typeof CountrysDataSchema>, rawCountry:z.infer<typeof CountrysDataSchema>}) => Promise<Answer> | Answer;
 }
 
 export function sleep(ms: number): Promise<void> {
