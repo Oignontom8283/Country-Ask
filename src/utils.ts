@@ -72,7 +72,7 @@ export type Answer =
 
 export interface QuestionMapper {
     type: QuestionType;
-    execute: (context:{continent:Continent[], inputType:InputTypeType, countrys:z.infer<typeof CountrysDataSchema>, rawCountry:z.infer<typeof CountrysDataSchema>}) => Promise<Answer> | Answer;
+    execute: (context:{continent:Continent[], inputType:InputTypeType, countrys:z.infer<typeof CountrysDataSchema>, rawCountrys:z.infer<typeof CountrysDataSchema>}) => Promise<Answer> | Answer;
 }
 
 export function sleep(ms: number): Promise<void> {
@@ -293,5 +293,5 @@ export function alignText(left: string, right: string): string {
     const spacesToAdd = Math.max(0, (process.stdout.columns || 80) - (leftLength + rightLength));
 
     // Créer la ligne finale
-    return `${left}${' '.repeat(spacesToAdd)}${right}`;
+    return `${left}${' '.repeat(spacesToAdd)}${right}\n`;
 }

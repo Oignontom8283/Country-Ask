@@ -1,5 +1,5 @@
 import inquirer from "inquirer";
-import { allQuestionType, Continent, QuestionType, sleep, cursor, CountryDataSchema, CountrysDataSchema, InputType, QuestionMapper, alignText, shuffleArray, randomSelect } from "./utils";
+import { allQuestionType, Continent, QuestionType, sleep, cursor, CountryDataSchema, CountrysDataSchema, InputType, QuestionMapper, alignText, shuffleArray, randomSelect, Answer } from "./utils";
 import axios from "axios";
 import questionsMapper from "./questions";
 
@@ -117,7 +117,7 @@ import questionsMapper from "./questions";
     const displayStade = (stade:string | number, total:string | number) => `${'['.white.bld}${stade.toString().yellow}${'/'.gray}${total.toString().blue}${']'.white.bld}`
     
     
-    const data = await axios.get("https://restcountries.com/v3.1/all")
+    const fetchedCountries = await axios.get("https://restcountries.com/v3.1/all")
         .then((response) => {
 
             const parse = CountrysDataSchema.safeParse(response.data)
@@ -131,47 +131,54 @@ import questionsMapper from "./questions";
             stopLoading("success")
 
             return parse.data
-        }).catch((error) => {
+        }).catch((error:any) => {
             stopLoading("error")
 
-            console.error(`Une erreur l'ors du chargement des données est survenue.`.red + `\n ${error}`.gray)
+            console.error(loadErrorMessage(error.message))
             process.exit(1)
         });
 
-    const rawCountry = data
-    const country = data.filter(item => continentSelected.includes(item.region))
+    const rawCountrys = fetchedCountries
+    const countrys = fetchedCountries.filter(item => continentSelected.includes(item.region))
 
     
     const questionsHandlers = questionsMapper.filter(question => typeSelected.includes(question.type))
 
-    let questions:QuestionMapper[] = []
+    let answers:Answer[] = []
     for (let i = 1; i <= numberOfQuestions; i++) {
 
         const question = randomSelect(questionsHandlers, 1)!;
 
-        const answer = await question.execute({continent: continentSelected, inputType: inputType, countrys: data, rawCountry:data})
+        const answer = await question.execute({continent: continentSelected, inputType: inputType, countrys: countrys, rawCountrys:rawCountrys})
 
         console.log("");
-        questions.push(question)
+        answers.push(answer)
 
         if (answer.successful) {
             console.log(
                 alignText(`Question n°${i} réussie !`.colorRGB([0, 255, 0]).bld, displayStade(i, numberOfQuestions)),
-                // `Question n°${i} réussie !`.colorRGB([0, 255, 0]).bld, `    ${displayStade(i, numberOfQuestions)}`,
-                // "\n",
                 "Points gagnés :".white, answer.score.toString().blue.bld,
                 "\n\n",
             )
         } else {
             console.log(
                 alignText(`Question n°${i} échouée !`.colorRGB([255, 0, 0]).bld, displayStade(i, numberOfQuestions)),
-                // `Question n°${i} échouée !`.colorRGB([255, 0, 0]).bld, `        ${displayStade(i, numberOfQuestions)}`,
-                // "\n",
                 "Bonne réponse :".white, answer.good_answer.blue.bld,
                 "\n\n",
             )
         }
     }
 
+    const suAnswers = answers.filter(item => item.successful).length
+    const suAnswersString = answers.filter(item => item.successful).length.toString()
 
+    console.log(
+        `${'_'.repeat(process.stdout.columns || 80)}`.gray.underline,
+        "\n",
+        "\n   ", "Fin du jeu !".green.underline.bld,
+        "\n",
+        `\nTotal des points   :`.white, answers.reduce((acc, item) => acc + item.score, 0).toString().yellow,
+        "\nRéponses correctes :".white, (suAnswers > numberOfQuestions / 2 ? suAnswersString.green.bld : suAnswersString.red.bld) + '/'.gray + numberOfQuestions.toString().blue,
+    );
+    
 })()
