@@ -295,3 +295,15 @@ export function alignText(left: string, right: string): string {
     // Créer la ligne finale
     return `${left}${' '.repeat(spacesToAdd)}${right}\n`;
 }
+
+export function stringToNumber(input: string): number | null {
+    // Enlever les espaces, les virgules, et les points utilisés comme séparateurs de milliers
+    const sanitizedInput = input.replace(/[^\d.-]/g, '');
+  
+    // Essayer de convertir la chaîne nettoyée en nombre
+    const result = Number(sanitizedInput);
+  
+    // Vérifier si la conversion est valide (isNaN vérifie si la conversion a échoué)
+    return isNaN(result) ? null : result;
+  }
+  
