@@ -83,8 +83,8 @@ const answers:QuestionMapper[] = [
                         name: "userInput",
                         message: `Combien y a t'il de personne en ${good_answer.translations.fra?.common || good_answer.name.common}?`,
                         choices: shuffleArray([
-                            ...others_answers!.map(item => ({value: item.population, name: item.population.toLocaleString("fr-FR")})),
-                            {value: good_answer.population, name: good_answer.population.toString()}
+                            ...others_answers!.map(item => ({value: item.population, name: item.population.toLocaleString("en-EN")})),
+                            {value: good_answer.population, name: good_answer.population.toLocaleString("en-EN")}
                         ])
                     }])).userInput
                 }
@@ -92,7 +92,7 @@ const answers:QuestionMapper[] = [
                 else if (inputType === "helper") {
 
                     const countries = rawCountry
-                        .map(item => ({value: item.population, name:item.population.toLocaleString("fr-FR")}))
+                        .map(item => ({value: item.population, name:item.population.toLocaleString("en-EN")}))
                         .sort((a, b) => b.value - a.value)
 
                     return await autocomplete({
@@ -123,7 +123,7 @@ const answers:QuestionMapper[] = [
                 score: 100,
             } : {
                 successful: false,
-                good_answer: good_answer.population.toLocaleString("fr-FR"),
+                good_answer: good_answer.population.toLocaleString("en-EN"),
                 score: 0
             }
         }

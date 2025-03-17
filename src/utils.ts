@@ -306,4 +306,37 @@ export function stringToNumber(input: string): number | null {
     // Vérifier si la conversion est valide (isNaN vérifie si la conversion a échoué)
     return isNaN(result) ? null : result;
   }
-  
+
+
+/**
+ * Finds the numbers in the given array that are closest to the target number.
+ *
+ * @param target - The target number to compare against.
+ * @param numbers - An array of numbers to search through.
+ * @returns An array of numbers that are closest to the target number.
+ *
+ * @example
+ * ```typescript
+ * const closest = findClosestNumbers(5, [1, 2, 3, 6, 8, 9]);
+ * console.log(closest); // Output: [6]
+ * ```
+ */
+export function findClosestNumbers(target: number, numbers: number[]): number[] {
+    if (numbers.length === 0) return [];
+
+    let minDiff = Infinity;
+    let closestNumbers: number[] = [];
+
+    for (const num of numbers) {
+        const diff = Math.abs(num - target);
+
+        if (diff < minDiff) {
+            minDiff = diff;
+            closestNumbers = [num];
+        } else if (diff === minDiff) {
+            closestNumbers.push(num);
+        }
+    }
+
+    return closestNumbers;
+}
